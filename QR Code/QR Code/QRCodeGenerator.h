@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Johnson. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 
 @interface QRCodeGenerator : NSObject
@@ -19,6 +19,9 @@
 + (BOOL)torchIsOn;
 
 + (void)openTorch:(BOOL)on;
+
++ (void)setVideoZoomFactor:(CGFloat)factor;
+
 
 - (CALayer *)showFromRect:(CGRect)rect inView:(UIView *)view complete:(void (^) (NSString *code))complete;
 

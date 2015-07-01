@@ -134,6 +134,16 @@ enum {
     }
 }
 
++ (void)setVideoZoomFactor:(CGFloat)factor
+{
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    [device lockForConfiguration:nil];
+    if (factor < device.activeFormat.videoMaxZoomFactor && factor > 1) {
+        device.videoZoomFactor = factor;
+    }
+    [device unlockForConfiguration];
+}
+
 - (CALayer *)showFromRect:(CGRect)rect inView:(UIView *)view complete:(void (^) (NSString *code))complete
 {
     self.complete = complete;
@@ -147,7 +157,6 @@ enum {
     // Output
     self.output = [[AVCaptureMetadataOutput alloc]init];
     [self.output setMetadataObjectsDelegate:(id)self queue:dispatch_get_main_queue()];
-    
     
     // Session
     self.session = [[AVCaptureSession alloc] init];

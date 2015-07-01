@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "QRCodeGenerator.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface ViewController ()
 {
@@ -25,6 +26,8 @@
     }];
     
     [QRCodeGenerator openTorch:YES];
+    
+    [QRCodeGenerator setVideoZoomFactor:5];
     
 //    [qr setRectOfInterest:CGRectMake(.5, .5, .5, .5)];
     // Do any additional setup after loading the view, typically from a nib.

@@ -23,6 +23,10 @@
     [qr showFromRect:self.view.bounds inView:self.view complete:^(NSString *code) {
         
     }];
+    
+    [QRCodeGenerator openTorch:YES];
+    
+//    [qr setRectOfInterest:CGRectMake(.5, .5, .5, .5)];
     // Do any additional setup after loading the view, typically from a nib.
 }
 

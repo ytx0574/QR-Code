@@ -111,6 +111,29 @@ enum {
     return resultingImage;
 }
 
++ (BOOL)torchIsOn
+{
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (![device hasTorch]) {
+        [[[UIAlertView alloc] initWithTitle:@"该设备不支持" message:nil delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil, nil] show];
+        return NO;
+    }else{
+        return device.torchMode == AVCaptureTorchModeOn ? YES : NO;
+    }
+}
+
++ (void)openTorch:(BOOL)on
+{
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (![device hasTorch]) {
+        [[[UIAlertView alloc] initWithTitle:@"该设备不支持" message:nil delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil, nil] show];
+    }else{
+        [device lockForConfiguration:nil];
+        [device setTorchMode:on ? AVCaptureTorchModeOn : AVCaptureTorchModeOff];
+        [device unlockForConfiguration];
+    }
+}
+
 - (CALayer *)showFromRect:(CGRect)rect inView:(UIView *)view complete:(void (^) (NSString *code))complete
 {
     self.complete = complete;
@@ -121,17 +144,13 @@ enum {
     // Input
     self.input = [AVCaptureDeviceInput deviceInputWithDevice:self.device error:nil];
     
-
-    
     // Output
     self.output = [[AVCaptureMetadataOutput alloc]init];
-    
     [self.output setMetadataObjectsDelegate:(id)self queue:dispatch_get_main_queue()];
     
     
     // Session
     self.session = [[AVCaptureSession alloc] init];
-    
     [self.session setSessionPreset:AVCaptureSessionPresetHigh];
     
     if ([self.session canAddInput:self.input])
@@ -164,6 +183,11 @@ enum {
     [_session startRunning];
     
     return  self.previewLayer;
+}
+
+- (void)setRectOfInterest:(CGRect)rect
+{
+    [self.output setRectOfInterest:CGRectZero];
 }
 
 #pragma mark AVCaptureMetadataOutputObjectsDelegate

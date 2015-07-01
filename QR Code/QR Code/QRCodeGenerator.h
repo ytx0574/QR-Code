@@ -16,6 +16,12 @@
 
 + (UIImage *)twoDimensionCodeImage:(UIImage *)twoDimensionCode withAvatarImage:(UIImage *)avatarImage;
 
++ (BOOL)torchIsOn;
+
++ (void)openTorch:(BOOL)on;
+
 - (CALayer *)showFromRect:(CGRect)rect inView:(UIView *)view complete:(void (^) (NSString *code))complete;
+
+- (void)setRectOfInterest:(CGRect)rect;
 
 @end

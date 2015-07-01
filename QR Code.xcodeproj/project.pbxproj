@@ -490,6 +490,7 @@
 				2CD68E4A1B43E37C005B7ADF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2CD68E4B1B43E37C005B7ADF /* Build configuration list for PBXNativeTarget "QR CodeTests" */ = {
 			isa = XCConfigurationList;
@@ -498,6 +499,7 @@
 				2CD68E4D1B43E37C005B7ADF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

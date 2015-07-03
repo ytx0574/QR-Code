@@ -9,6 +9,9 @@
 #import "QRCodeGenerator.h"
 #import "qrencode.h"
 #import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
+
+#define iOS8 ([UIDevice currentDevice].systemVersion.floatValue >= 8.f)
 
 enum {
     qr_margin = 3
@@ -138,10 +141,35 @@ enum {
 {
     AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     [device lockForConfiguration:nil];
-    if (factor < device.activeFormat.videoMaxZoomFactor && factor > 1) {
+//    if (factor < device.activeFormat.videoMaxZoomFactor && factor > 1) {
+//        device.videoZoomFactor = factor;
+//    }
+    
+    NSAssert((factor >= 1 && factor <= 10), @"factor范围在1-10之间");
+    if (factor >= 1 && factor <= 10) {
         device.videoZoomFactor = factor;
     }
     [device unlockForConfiguration];
+}
+
++ (void)setVolume:(CGFloat)value
+{
+    //音量更改通知
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(xxx:) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
+    NSAssert(value <= 1 && value >= 0, @"音量值在0-1之间");
+    
+    static UISlider *volumeViewSlider = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        for (UIView *view in [[[MPVolumeView alloc] init] subviews]){
+            if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+                volumeViewSlider = (UISlider*)view;
+                break;
+            }
+        }
+    });
+    
+    [volumeViewSlider setValue:value animated:NO];
 }
 
 - (CALayer *)showFromRect:(CGRect)rect inView:(UIView *)view complete:(void (^) (NSString *code))complete
@@ -182,14 +210,23 @@ enum {
     if(authStatus == AVAuthorizationStatusRestricted || authStatus == AVAuthorizationStatusDenied){
         [[[UIAlertView alloc] initWithTitle:@"请在iPhone的“设置-隐私-相机”选项中，允许访问你的相机。" message:nil delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil, nil] show];
         self.previewLayer.backgroundColor = [UIColor blackColor].CGColor;
-        return nil;
     }else {
-        // 条码类型 AVMetadataObjectTypeQRCode
-        self.output.metadataObjectTypes =@[AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeUPCECode,AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode39Mod43Code, AVMetadataObjectTypeEAN13Code,AVMetadataObjectTypeEAN8Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypePDF417Code,AVMetadataObjectTypeQRCode, AVMetadataObjectTypeAztecCode, AVMetadataObjectTypeInterleaved2of5Code,AVMetadataObjectTypeITF14Code, AVMetadataObjectTypeDataMatrixCode];
+        if ([[[UIDevice currentDevice] name] isEqualToString:@"iPhone Simulator"]) {
+            self.previewLayer.backgroundColor = [UIColor blackColor].CGColor;
+//            [[[UIAlertView alloc] initWithTitle:@"模拟器不支持相机,请使用手持设备" message:nil delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil, nil] show];
+        }else {
+            // 条码类型 AVMetadataObjectTypeQRCode
+            self.output.metadataObjectTypes = @[
+                                                AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeUPCECode, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode39Mod43Code, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeEAN8Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeQRCode, AVMetadataObjectTypeAztecCode,
+                                                
+#if __IPHONE_OS_VERSION_MIN_REQUIRED == __IPHONE_8_0
+                                                AVMetadataObjectTypeInterleaved2of5Code, AVMetadataObjectTypeITF14Code, AVMetadataObjectTypeDataMatrixCode
+#endif
+                                                ];
+            // Start
+            [_session startRunning];
+        }
     }
-    
-    // Start
-    [_session startRunning];
     
     return  self.previewLayer;
 }

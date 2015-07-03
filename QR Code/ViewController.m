@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "QRCodeGenerator.h"
 #import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 @interface ViewController ()
 {
@@ -20,17 +21,27 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    qr = [[QRCodeGenerator alloc] init];
-    [qr showFromRect:self.view.bounds inView:self.view complete:^(NSString *code) {
-        
-    }];
+//    qr = [[QRCodeGenerator alloc] init];
+//    [qr showFromRect:self.view.bounds inView:self.view complete:^(NSString *code) {
+//        
+//    }];
+//    
+//    [QRCodeGenerator openTorch:YES];
+//    
+//    [QRCodeGenerator setVideoZoomFactor:1];
     
-    [QRCodeGenerator openTorch:YES];
     
-    [QRCodeGenerator setVideoZoomFactor:5];
     
-//    [qr setRectOfInterest:CGRectMake(.5, .5, .5, .5)];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(0, 111, 320, 111)];
+    [slider addTarget:self action:@selector(xx:) forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:slider];
+    
+}
+
+- (void)xx:(UISlider *)slider
+{
+    [QRCodeGenerator setVolume:slider.value];
 }
 
 - (void)didReceiveMemoryWarning {

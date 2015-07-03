@@ -22,6 +22,8 @@
 
 + (void)setVideoZoomFactor:(CGFloat)factor;
 
++ (void)setVolume:(CGFloat)value;
+
 
 - (CALayer *)showFromRect:(CGRect)rect inView:(UIView *)view complete:(void (^) (NSString *code))complete;
 
